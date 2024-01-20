@@ -1,29 +1,23 @@
-import { TestBed } from '@angular/core/testing';
+import { render, screen } from '@testing-library/angular';
+import { userEvent } from '@testing-library/user-event';
 import { AppComponent } from './app.component';
 
-describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppComponent],
-    }).compileComponents();
-  });
+it('renders and interacts with counter', async () => {
+  const user = userEvent.setup();
+  await render(AppComponent);
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+  const div = screen.getByTestId('count');
+  expect(div).not.toBeNull();
 
-  it(`should have the 'atl-web-test-runner' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('atl-web-test-runner');
-  });
+  expect(div.textContent).toBe('0');
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, atl-web-test-runner');
-  });
+  await user.click(screen.getByRole('button', { name: /increment/i }));
+  await user.click(screen.getByRole('button', { name: /increment/i }));
+  expect(div.textContent).toBe('2');
+
+  await user.click(screen.getByRole('button', { name: /decrement/i }));
+  expect(div.textContent).toBe('1');
+
+  await user.click(screen.getByRole('button', { name: /reset/i }));
+  expect(div.textContent).toBe('0');
 });
